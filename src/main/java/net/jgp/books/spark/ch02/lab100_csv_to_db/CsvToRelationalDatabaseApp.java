@@ -31,6 +31,7 @@ public class CsvToRelationalDatabaseApp {
    * The processing code.
    */
   private void start() {
+	  
     // Creates a session on a local master
     SparkSession spark = SparkSession.builder()
         .appName("CSV to DB")
@@ -68,8 +69,8 @@ public class CsvToRelationalDatabaseApp {
     // pom.xml
     Properties prop = new Properties();
     prop.setProperty("driver", "org.postgresql.Driver");
-    prop.setProperty("user", "jgp");
-    prop.setProperty("password", "Spark<3Java");
+    prop.setProperty("user", "postgres");
+    prop.setProperty("password", "rgirodon");
 
     // Write in a table called ch02
     df.write()
