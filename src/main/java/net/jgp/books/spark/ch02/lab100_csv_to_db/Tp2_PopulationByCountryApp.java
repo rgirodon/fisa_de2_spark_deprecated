@@ -8,6 +8,8 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
+import static org.apache.spark.sql.functions.expr;
+
 /**
  * Simple SQL select on ingested data after preparing the data with the
  * dataframe API.
@@ -175,17 +177,36 @@ public class Tp2_PopulationByCountryApp {
         .load("data/countrypop/populationbycountry19802010millions.csv");
 
     // Remove the columns we do not want (tip : for loop from 1981 to 2009)
+    for (int i = 1981; i < 2010; i++) {
+    	df = df.drop(df.col("yr" + i));
+    }
 
     // Creates new column evolution as yr2010 - yr1980 multiplied by 1 million (tip : method withColumn of dataset and expr function)
+    df = df.withColumn("evolution", expr("yr2010 - yr1980"));
 
     // Create a view geodata of the dataset 
+    df.createOrReplaceTempView("geodata");
 
     // Keep only lines with negative evolution, ordered by evolution to have lowest evolution first
+    Dataset<Row> negativeEvolutionDf =
+            spark.sql(
+                "SELECT * FROM geodata "
+                    + "WHERE geo IS NOT NULL AND evolution <= 0 "
+                    + "ORDER BY evolution ");
 
     // Shows 5 first rows
+    negativeEvolutionDf.show(5);
 
 	// Keep only lines with positive evolution, ordered by evolution desc to have highest evolution first
-	
+    Dataset<Row> positiveEvolutionDf =
+            spark.sql(
+                "SELECT * FROM geodata "
+                    + "WHERE geo IS NOT NULL "
+                    + "  AND evolution >= 0 "
+                    + "  AND geo NOT IN ('Asia', 'Africa', 'World', 'North America', 'Asia & Oceania', 'Central & South America', 'Middle East')"
+                    + "ORDER BY evolution desc");
+
     // Shows 5 first rows
+    positiveEvolutionDf.show(5);
   }
 }
