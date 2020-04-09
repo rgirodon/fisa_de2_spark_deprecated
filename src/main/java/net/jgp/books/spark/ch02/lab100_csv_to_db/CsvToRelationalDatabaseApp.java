@@ -55,8 +55,11 @@ public class CsvToRelationalDatabaseApp {
     // virtual column containing ", " and the fname column
     df = df.withColumn(
         "name",
-        concat(df.col("lname"), lit(", "), df.col("fname")));
+        concat(df.col("fname"), lit(" "), df.col("lname")));
 
+    df.show();
+    
+    /*
     // Step 3: Save
     // ----
 
@@ -76,6 +79,7 @@ public class CsvToRelationalDatabaseApp {
     df.write()
         .mode(SaveMode.Overwrite)
         .jdbc(dbConnectionUrl, "ch02", prop);
+    */
 
     System.out.println("Process complete");
   }
