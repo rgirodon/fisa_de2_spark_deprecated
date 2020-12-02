@@ -1,13 +1,7 @@
 package net.jgp.books.spark.ch02.lab100_csv_to_db;
 
-import static org.apache.spark.sql.functions.concat;
-import static org.apache.spark.sql.functions.lit;
-
-import java.util.Properties;
-
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
 /**
@@ -58,6 +52,9 @@ public class CsvToRelationalDatabaseSparkSqlApp {
     df = spark.sql(
                 "SELECT fname, lname, CONCAT(fname, ' ',  lname) AS name FROM authors");
 
+    df.show();
+        
+    /*
     // Step 3: Save
     // ----
 
@@ -71,13 +68,15 @@ public class CsvToRelationalDatabaseSparkSqlApp {
     Properties prop = new Properties();
     prop.setProperty("driver", "org.postgresql.Driver");
     prop.setProperty("user", "postgres");
-    prop.setProperty("password", "rgirodon");
+    prop.setProperty("password", "RafaelYanice10");
 
     // Write in a table called ch02
     df.write()
         .mode(SaveMode.Overwrite)
-        .jdbc(dbConnectionUrl, "ch02", prop);
-
+        .jdbc(dbConnectionUrl, "ch03", prop);
+	*/
+    
     System.out.println("Process complete");
+    
   }
 }

@@ -3,11 +3,8 @@ package net.jgp.books.spark.ch02.lab100_csv_to_db;
 import static org.apache.spark.sql.functions.concat;
 import static org.apache.spark.sql.functions.lit;
 
-import java.util.Properties;
-
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
 /**
@@ -31,22 +28,37 @@ public class CsvToRelationalDatabaseApp {
    * The processing code.
    */
   private void start() {
-	  
+	
     // Creates a session on a local master
     SparkSession spark = SparkSession.builder()
         .appName("CSV to DB")
         .master("local")
         .getOrCreate();
+    /*
+	// Creates a session on a yarn master
+    SparkSession spark = SparkSession.builder()
+        .appName("CSV to DB")
+        .getOrCreate();
+    */
 
     // Step 1: Ingestion
     // ---------
-
-    // Reads a CSV file with header, called authors.csv, stores it in a
+   
+    // Reads a local CSV file with header, called data/authors.csv, stores it in a
     // dataframe
     Dataset<Row> df = spark.read()
         .format("csv")
         .option("header", "true")
         .load("data/authors.csv");
+    
+    /*
+    // Reads a hdfs CSV file with header, called /tmp/data/authors.csv, stores it in a
+    // dataframe
+    Dataset<Row> df = spark.read()
+        .format("csv")
+        .option("header", "true")
+        .load("/tmp/data/authors.csv");
+    */
 
     // Step 2: Transform
     // ---------
@@ -73,14 +85,14 @@ public class CsvToRelationalDatabaseApp {
     Properties prop = new Properties();
     prop.setProperty("driver", "org.postgresql.Driver");
     prop.setProperty("user", "postgres");
-    prop.setProperty("password", "rgirodon");
+    prop.setProperty("password", "RafaelYanice10");
 
     // Write in a table called ch02
     df.write()
         .mode(SaveMode.Overwrite)
         .jdbc(dbConnectionUrl, "ch02", prop);
-    */
-
+    
     System.out.println("Process complete");
+    */
   }
 }
