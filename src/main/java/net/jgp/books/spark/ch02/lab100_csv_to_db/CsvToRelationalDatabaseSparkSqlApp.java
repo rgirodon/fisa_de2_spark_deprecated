@@ -1,8 +1,5 @@
 package net.jgp.books.spark.ch02.lab100_csv_to_db;
 
-import static org.apache.spark.sql.functions.concat;
-import static org.apache.spark.sql.functions.lit;
-
 import java.util.Properties;
 
 import org.apache.spark.sql.Dataset;
