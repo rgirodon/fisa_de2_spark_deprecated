@@ -41,54 +41,31 @@ public class Tp3_HigherEdInstitutionPerCountyApp {
 							        .option("inferSchema", "true")
 							        .option("encoding", "cp1252")
 							        .load("data/census/PEP_2017_PEPANNRES.csv");
+	     	    
+	    // Renaming and dropping the columns we do not need
 	    
-	    censusDf = censusDf
-			        .drop("GEO.id")
-			        .drop("rescen42010")
-			        .drop("resbase42010")
-			        .drop("respop72010")
-			        .drop("respop72011")
-			        .drop("respop72012")
-			        .drop("respop72013")
-			        .drop("respop72014")
-			        .drop("respop72015")
-			        .drop("respop72016")
-			        .withColumnRenamed("respop72017", "pop2017")
-			        .withColumnRenamed("GEO.id2", "countyId")
-			        .withColumnRenamed("GEO.display-label", "county");
-	    	   	    
-	    censusDf.sample(0.1).show(3, false);	    
+	       // drop columns GEO.id, resbase42010, respop72010, respop72011, respop72012, respop72013, respop72014, respop72015, respop72016 (tip : dataset drop method)
+	    
+	       // rename column GEO.id2 -> countyId, GEO.display-label -> county, respop72017 -> pop2017 (tip : dataset withColumnRenamed method)
 
+	    
 	    // Higher education institution
 	    Dataset<Row> higherEdDf = spark
 							        .read()
 							        .format("csv")
 							        .option("header", "true")
 							        .option("inferSchema", "true")
-							        .load("data/dapip/InstitutionCampus.csv");
+							        .load("data/dapip/InstitutionCampus.csv");	    
 	    
-	    higherEdDf = higherEdDf
-				        .filter("LocationType = 'Institution'")
-				        .withColumn(
-				            "addressElements",
-				            split(higherEdDf.col("Address"), " "));
+	    // Keep only lines with column LocationType == 'Institution' (tip : dataset filter method) 
 	    
-	    higherEdDf = higherEdDf
-				        .withColumn(
-				            "addressElementCount",
-				            size(higherEdDf.col("addressElements")));
+	    // Create column "addressElements" as the split of column "Address" around space character (tip : dataset split method)
 	    
-	    higherEdDf = higherEdDf
-				        .withColumn(
-				            "zip9",
-				            element_at(
-				                higherEdDf.col("addressElements"),
-				                higherEdDf.col("addressElementCount")));
+	    // Create column "addressElementCount" as the size of column "addressElements" (tip : dataset size method)
 	    
-	    higherEdDf = higherEdDf
-				        .withColumn(
-				            "splitZipCode",
-				            split(higherEdDf.col("zip9"), "-"));
+	    // Create column "zip9" as the last element of column "addressElements" (tip : dataset element_at method)
+	    
+	    // Create column "splitZipCode" as the split of column "zip9" around "-" character (tip : dataset split method)
 	    
 	    higherEdDf = higherEdDf
 				        .withColumn("zip", higherEdDf.col("splitZipCode").getItem(0))
@@ -110,7 +87,13 @@ public class Tp3_HigherEdInstitutionPerCountyApp {
 				        .drop("addressElementCount")
 				        .drop("splitZipCode");
 	    
-	    higherEdDf.sample(0.1).show(3, false);	    
+	    // Add column zip as 1st element of column "splitZipCode"
+	    
+	    // Renaming and dropping the columns we do not need
+	    
+	       // drop columns DapipId, OpeId, ParentName, ParentDapipId, LocationType, Address, GeneralPhone, AdminName, AdminPhone, AdminEmail, Fax, UpdateDate, zip9, addressElements, addressElementCount, splitZipCode (tip : dataset drop method)
+	    
+	       // rename column LocationName -> location (tip : dataset withColumnRenamed method)	    
 
 	    // Zip to county
 	    Dataset<Row> countyZipDf = spark
@@ -119,38 +102,17 @@ public class Tp3_HigherEdInstitutionPerCountyApp {
 							        .option("header", "true")
 							        .option("inferSchema", "true")
 							        .load("data/hud/COUNTY_ZIP_092018.csv");
-	    
-	    countyZipDf = countyZipDf
-				        .drop("res_ratio")
-				        .drop("bus_ratio")
-				        .drop("oth_ratio")
-				        .drop("tot_ratio");
 
-	    countyZipDf.sample(0.1).show(3, false);
-
-	    // Institutions per county id
-	    Dataset<Row> institPerCountyDf = higherEdDf.join(
-												        countyZipDf,
-												        higherEdDf.col("zip").equalTo(countyZipDf.col("zip")),
-												        "inner");
+	    // drop columns res_ratio, bus_ratio, oth_ratio, tot_ratio
 	    
-	    // Institutions per county name
-	    institPerCountyDf = institPerCountyDf.join(
-										        censusDf,
-										        institPerCountyDf.col("county").equalTo(censusDf.col("countyId")),
-										        "left");
+	    // Create dataset institPerCountyDf as the Join of datasets higherEdDf and countyZipDf on column zip (inner join)
+	    
+	    // Join dataset institPerCountyDf and censusDf on column county (and countyId) (left join)
 
 	    // Final clean up
-	    institPerCountyDf = institPerCountyDf
-						        .drop(higherEdDf.col("zip"))
-						        .drop(countyZipDf.col("county"))
-						        .drop("countyId")
-						        .distinct();
-
-	    System.out.println("Final list");
-	    institPerCountyDf.show(200, false);
 	    
-	    System.out.println("The combined list has " + institPerCountyDf.count()
-	        + " elements.");
+	    	// drop columns zip, county, countyId
+	    
+	    	// drop duplicate lines (with distinct method)
 	  }
 }
