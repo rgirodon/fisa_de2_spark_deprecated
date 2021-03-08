@@ -1,7 +1,10 @@
 package net.jgp.books.spark.ch02.lab100_csv_to_db;
 
+import java.util.Properties;
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
 /**
@@ -54,7 +57,7 @@ public class CsvToRelationalDatabaseSparkSqlApp {
 
     df.show();
         
-    /*
+    
     // Step 3: Save
     // ----
 
@@ -74,7 +77,7 @@ public class CsvToRelationalDatabaseSparkSqlApp {
     df.write()
         .mode(SaveMode.Overwrite)
         .jdbc(dbConnectionUrl, "ch03", prop);
-	*/
+	
     
     System.out.println("Process complete");
     

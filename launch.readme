@@ -3,3 +3,5 @@ spark-submit
 	--master yarn 
 	--deploy-mode client 
 	sparkInAction2-chapter02-1.0.0-SNAPSHOT.jar
+	
+spark-submit --class net.jgp.books.spark.ch02.lab100_csv_to_db.CsvToRelationalDatabaseApp  --master yarn  --deploy-mode client sparkInAction2-chapter02-1.0.0-SNAPSHOT.jar	

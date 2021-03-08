@@ -58,6 +58,8 @@ public class CsvJoinApp {
 				            "left");    
     
     dfAuthors = dfAuthors.drop(dfOrigins.col("fname"));
+    
+    dfAuthors = dfAuthors.filter("origin = 'UK'");
 
     dfAuthors.show();
   }
